@@ -3,7 +3,7 @@ public class Main {
     System.out.println("Hello gamer!");
     System.out.println("I have randomly chose a movie title. But I won't tell you which one.");
     System.out.println("Try to guess it. If you can.");
-    System.out.print("\nENTER LETTER: ");
+    System.out.println("Try to guess it. If you can.");
     Game guessTheMovie = new Game();
     guessTheMovie.initMatch();
   }
