@@ -1,56 +1,51 @@
 import java.io.*;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Game {
   private Scanner scanGuess;
   //STRING
   private String movieTitle;
-  //CHARS
+  String wrongGuesses;
+  String rightGuesses;
+  String totalGuessed;
+  //CHAR
   private char guess;
   //ARRAYS
-  private char charMovieTitle[];
-  private char charMovie[];
-  private char hiddenMovie[];
-  private char updateTitle[];
-  private char wrongGuesses[];
-  private char rightGuesses[];
-
-  //private char charTemp[];
-  //private char[] charGuesses = rightLetters.toCharArray();
+  private char[] charMovieTitle;
+  private char[] charMovie;
+  private char[] hiddenTitle;
+  private char[] updateTitle;
   //INT
+  private int contaTentativo = 10;
+  private int score;
   private int spaces = 0;
   private int movieLength; //movieTitleLength - spaces;
   private int randomNumber = 1; // Random movie number
-  private int contaTentativo = 10;
-  private int score;
   //BOOLEAN
   //private boolean[] isEntered = new boolean[movieTitle.length()];
   private boolean isEntered = false;
   private boolean isGuessed = false;
   //boolean hasWon;
+
   //costruttore
   Game() {
+    contaTentativo = 10;
+    score = 0;
     fileReader();
     movieTitle = fileReader().toUpperCase();
-    hiddenMovie = hideTitle();
+    hiddenTitle = hideTitle();
     System.out.println("\n" + movieTitle);
     System.out.println(charMovie);
-    /*next commit:
-      > check if movieTitle contains guess
-        if guess is found replace that with guess and display update
-    */
   }
+
   public void initMatch() {
     System.out.print("ENTER LETTER: ");
     movieLength = movieTitle.length() - spaces; // without the spacing
     readGuess();
-    updateTitle();
+    //updateTitle();
   }
 
-  // @return a random number using math.random() function
   private int randomMovieNumber() {
     randomNumber = (int) (Math.random() * 25);
     return randomNumber;
@@ -78,7 +73,7 @@ public class Game {
   char[] hideTitle() {
     charMovie = movieTitle.toCharArray();
     for (int i = 0; i < movieTitle.length(); i++) {
-      if(charMovie[i] != ' '){
+      if (charMovie[i] != ' ') {
         charMovie[i] = 'x';
       }
     }
@@ -93,12 +88,16 @@ public class Game {
       e.printStackTrace();
     }
     if (scanGuess == null) throw new AssertionError();
-    guess = scanGuess.nextLine().charAt(0);
-    //System.out.println(guess);
-    contaTentativo--;
-    isEntered = true;
-    guess = Character.toUpperCase(guess);
-    return guess;
+    do {
+      guess = scanGuess.nextLine().charAt(0);
+      //System.out.println(guess);
+      contaTentativo--;
+      isEntered = true;
+      guess = Character.toUpperCase(guess);
+      updateTitle();
+      scanGuess.close();
+      return guess;
+    } while (contaTentativo < 10 || movieLength > 0);
   }
   private void updateTitle() {
     charMovieTitle = movieTitle.toCharArray();
@@ -106,17 +105,26 @@ public class Game {
     updateTitle = charMovieTitle;
     for (int i = 0; i < movieLength; i++) {
       if (updateTitle[i] == guess) {
-        hiddenMovie[i] = guess;
+        hiddenTitle[i] = guess;
         isGuessed = true;
-
       }
     }
-    if(isGuessed){
+
+    updateTitle = hiddenTitle;
+    options();
+  }
+  private void options(){
+    //System.out.println(updateTitle);
+    //System.out.println("already entered: " + totalGuessed);
+
+    if(isGuessed) {
       score++;
-      //rightGuesses += guess;
-      updateTitle = hiddenMovie;
       System.out.println(updateTitle);
+    } else {
+      wrongGuesses += guess;
+      System.out.println(wrongGuesses);
     }
+    System.out.println("letters already guessed: " + guess);
     System.out.println("SCORE: " + score);
     System.out.println("tentativi rimasti: " + contaTentativo);
   }
